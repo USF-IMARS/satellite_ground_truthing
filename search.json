@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "satellite-ground-truthing",
+    "section": "",
+    "text": "# Install librarian package if you haven't already\nif (!requireNamespace(\"librarian\", quietly = TRUE)) {\n  install.packages(\"librarian\")\n}\nlibrary(librarian)\nshelf(\n  dplyr,\n  here,\n  leaflet\n)\n\n\n  The 'cran_repo' argument in shelf() was not set, so it will use\n  cran_repo = 'https://cran.r-project.org' by default.\n\n  To avoid this message, set the 'cran_repo' argument to a CRAN\n  mirror URL (see https://cran.r-project.org/mirrors.html) or set\n  'quiet = TRUE'.\n\nsource(here(\"./R/dataMunging/nerrs.R\"))\n\n\n  The 'cran_repo' argument in shelf() was not set, so it will use\n  cran_repo = 'https://cran.r-project.org' by default.\n\n  To avoid this message, set the 'cran_repo' argument to a CRAN\n  mirror URL (see https://cran.r-project.org/mirrors.html) or set\n  'quiet = TRUE'.\n\n\nLoad NERRS data\n\ndata &lt;- loadData()\n\n\n# Create a color palette\npal &lt;- colorFactor(palette = \"viridis\", domain = data$occurrenceStatus)\n\n# Create the leaflet map\nleaflet(data) %&gt;%\n  addTiles() %&gt;%\n  addCircleMarkers(\n    ~lon, ~lat,\n    color = ~pal(occurrenceStatus),\n    radius = 5,\n    fillOpacity = 0.8,\n    popup = ~paste(\"Occurrence Status:\", occurrenceStatus)\n  ) %&gt;%\n  addLegend(\n    \"bottomright\", pal = pal, values = ~occurrenceStatus,\n    title = \"Occurrence Status\",\n    opacity = 1\n  )"
+  }
+]
