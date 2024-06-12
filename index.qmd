@@ -2,10 +2,47 @@
 title: "satellite-ground-truthing"
 ---
 
-This is a Quarto website.
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+
+
+```{r setup}
+# Install librarian package if you haven't already
+if (!requireNamespace("librarian", quietly = TRUE)) {
+  install.packages("librarian")
+}
+library(librarian)
+shelf(
+  dplyr,
+  here,
+  leaflet
+)
+
+source(here("./R/dataMunging/nerrs.R"))
+```
+
+Load NERRS data
+```{r}
+data <- loadData()
+```
 
 ```{r}
-1 + 1
+#| code-summary: create map 
+# Create a color palette
+pal <- colorFactor(palette = "viridis", domain = data$occurrenceStatus)
+
+# Create the leaflet map
+leaflet(data) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    ~lon, ~lat,
+    color = ~pal(occurrenceStatus),
+    radius = 5,
+    fillOpacity = 0.8,
+    popup = ~paste("Occurrence Status:", occurrenceStatus)
+  ) %>%
+  addLegend(
+    "bottomright", pal = pal, values = ~occurrenceStatus,
+    title = "Occurrence Status",
+    opacity = 1
+  )
 ```
