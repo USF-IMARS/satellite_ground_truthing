@@ -1,3 +1,5 @@
 # quarto init & RStudio files
 .Rproj.user
 *.Rproj
+
+/.quarto/

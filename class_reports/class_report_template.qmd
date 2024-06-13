@@ -1,0 +1,108 @@
+---
+title: "Examine Points for a give class"
+author: "Tylar Murray"
+editor: source
+execute: 
+  echo: false
+  warning: false
+params:
+  className: "mangrove"  # TODO: this is unused in the code
+---
+
+```{r setup}
+# NOTE: must have conda system package installed.
+#      then run steps below (only once per system):
+# rgee::ee_install()
+# rgee::ee_install_upgrade()
+# rgee::ee_Authenticate()
+
+# Install librarian package if you haven't already
+if (!requireNamespace("librarian", quietly = TRUE)) {
+  install.packages("librarian")
+}
+library(librarian)
+shelf(
+  dplyr,
+  here,
+  leaflet,
+  geojsonio,
+  ggplot2,
+  rgee,
+  tidyverse
+)
+
+# TODO: get all the data instead?
+source(here("./R/dataMunging/nerrs.R"))
+```
+
+Auth GEE:
+```{r}
+# Init your Earth Session  
+rgee::ee_Initialize()
+```
+
+
+```{r}
+# === Define the geometry (latitude and longitude)
+# lat <- 27.63615563874265
+# lon <-  -80.99341033321342
+# geometry <- ee$Geometry$Point(lon, lat)
+
+df <- loadData() %>%
+  filter(occurrenceStatus == 1)  # TODO: this should filter using className
+# Convert DataFrame to list of coordinates
+coord_list <- lapply(1:nrow(df), function(i) {
+  list(df$lon[i], df$lat[i])
+})
+
+# Create an Earth Engine Geometry from the list of coordinates
+geometry <- ee$Geometry$MultiPoint(coord_list)
+
+# Define the time period (e.g., start and end dates)
+start_date <- "2020-01-01"
+end_date <- "2024-01-01"
+
+ic_id = "IDAHO_EPSCOR/TERRACLIMATE"
+```
+
+```{r}
+# Define the collection
+terraclimate <- ee$ImageCollection(ic_id) %>%
+  ee$ImageCollection$filterDate(start_date, end_date) %>%
+  ee$ImageCollection$filterBounds(geometry)
+
+print(terraclimate$getInfo())
+
+# Do extraction ----
+ee_nc_rain <- ee_extract(
+  x = terraclimate, 
+  y = geometry,
+  sf = FALSE,
+  scale = 1000,  # meters
+)
+
+# extraction comes back as a wide df with columns like X{img_id}_{band_id}
+# convert it to a long df
+long_df <- ee_nc_rain %>%
+  pivot_longer(everything(), names_to = "column") %>%
+  separate(col = column, into = c("img_id", "band_id"), sep = "_", remove = FALSE) %>%
+  select(-column) %>%
+  rename(value = value) %>%
+  mutate(img_id = str_replace(img_id, "X", ""))
+
+# add the dates of the images
+image_dates <- ee_get_date_ic(terraclimate) %>%
+  mutate(
+    id = str_replace(id, ".*/", ""),   # cut the ic_id out
+    time_start = as.Date(time_start)
+  ) 
+long_df <- long_df %>%
+  left_join(image_dates, by = c("img_id" = "id"))
+  
+# plot the ts
+ggplot(long_df, aes(x = time_start, y = value, color = band_id)) +
+  geom_line() +
+  labs(x = "Date", y = "Value") +
+  ggtitle("Time Series Plot by Band") +
+  theme_minimal()
+```

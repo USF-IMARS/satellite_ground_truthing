@@ -2,9 +2,6 @@
 title: "satellite-ground-truthing"
 ---
 
-
-
-
 ```{r setup}
 # Install librarian package if you haven't already
 if (!requireNamespace("librarian", quietly = TRUE)) {
