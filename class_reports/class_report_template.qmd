@@ -7,15 +7,19 @@ execute:
   warning: false
 params:
   className: "mangrove"  # TODO: this is unused in the code
+  occurrenceStatus: 1
 ---
 
-```{r setup}
+```{r}
+#| code-summary: rgee install
 # NOTE: must have conda system package installed.
 #      then run steps below (only once per system):
 # rgee::ee_install()
-# rgee::ee_install_upgrade()
+rgee::ee_install_upgrade()
 # rgee::ee_Authenticate()
+```
 
+```{r setup}
 # Install librarian package if you haven't already
 if (!requireNamespace("librarian", quietly = TRUE)) {
   install.packages("librarian")
@@ -41,6 +45,8 @@ Auth GEE:
 rgee::ee_Initialize()
 ```
 
+This analysis uses the TerraClimate Monthly Climate and Climatic Water Balance for Global Terrestrial Surfaces from  University of Idaho [[ref](https://developers.google.com/earth-engine/datasets/catalog/IDAHO_EPSCOR_TERRACLIMATE)].
+
 
 ```{r}
 # === Define the geometry (latitude and longitude)
@@ -49,7 +55,7 @@ rgee::ee_Initialize()
 # geometry <- ee$Geometry$Point(lon, lat)
 
 df <- loadData() %>%
-  filter(occurrenceStatus == 1)  # TODO: this should filter using className
+  filter(occurrenceStatus == params$occurrenceStatus)  # TODO: this should filter using className
 # Convert DataFrame to list of coordinates
 coord_list <- lapply(1:nrow(df), function(i) {
   list(df$lon[i], df$lat[i])
@@ -59,7 +65,7 @@ coord_list <- lapply(1:nrow(df), function(i) {
 geometry <- ee$Geometry$MultiPoint(coord_list)
 
 # Define the time period (e.g., start and end dates)
-start_date <- "2020-01-01"
+start_date <- "2010-01-01"
 end_date <- "2024-01-01"
 
 ic_id = "IDAHO_EPSCOR/TERRACLIMATE"
@@ -71,16 +77,18 @@ terraclimate <- ee$ImageCollection(ic_id) %>%
   ee$ImageCollection$filterDate(start_date, end_date) %>%
   ee$ImageCollection$filterBounds(geometry)
 
-print(terraclimate$getInfo())
+# print(terraclimate$getInfo())
 
 # Do extraction ----
 ee_nc_rain <- ee_extract(
   x = terraclimate, 
   y = geometry,
   sf = FALSE,
-  scale = 1000,  # meters
+  scale = 10,  # meters
 )
-
+```
+```{r}
+#| code-summary: reshape wide to long
 # extraction comes back as a wide df with columns like X{img_id}_{band_id}
 # convert it to a long df
 long_df <- ee_nc_rain %>%
@@ -89,8 +97,9 @@ long_df <- ee_nc_rain %>%
   select(-column) %>%
   rename(value = value) %>%
   mutate(img_id = str_replace(img_id, "X", ""))
-
-# add the dates of the images
+```
+```{r}
+#| code-summary: add the dates of the images
 image_dates <- ee_get_date_ic(terraclimate) %>%
   mutate(
     id = str_replace(id, ".*/", ""),   # cut the ic_id out
@@ -98,11 +107,37 @@ image_dates <- ee_get_date_ic(terraclimate) %>%
   ) 
 long_df <- long_df %>%
   left_join(image_dates, by = c("img_id" = "id"))
-  
-# plot the ts
+```
+
+```{r}
+#| code-summary:  plot the ts
 ggplot(long_df, aes(x = time_start, y = value, color = band_id)) +
   geom_line() +
   labs(x = "Date", y = "Value") +
   ggtitle("Time Series Plot by Band") +
   theme_minimal()
+```
+
+
+Perform seasonal decomposition on the soil moisture, which is derived using a one-dimensional soil water balance model.
+
+```{r}
+#| code-summary: seasonal decomposition of "soil"
+
+data <- filter(long_df, band_id == "soil")
+
+# Create a time series object
+ts_data <- ts(data$value, start = c(2010, 1), frequency = 12) # monthly 
+
+# Perform seasonal decomposition
+decomposed_ts <- stl(ts_data, s.window = "periodic")
+
+# Plot the decomposed components
+par(mfrow = c(3, 1)) # Set up the plotting area to have 3 rows and 1 column
+plot(decomposed_ts$time.series[, "trend"], main = "Trend Component", ylab = "Trend", xlab = "Time")
+plot(decomposed_ts$time.series[, "seasonal"], main = "Seasonal Component", ylab = "Seasonal", xlab = "Time")
+plot(decomposed_ts$time.series[, "remainder"], main = "Residual Component", ylab = "Residuals", xlab = "Time")
+
+# Reset plotting area
+par(mfrow = c(1, 1))
 ```
