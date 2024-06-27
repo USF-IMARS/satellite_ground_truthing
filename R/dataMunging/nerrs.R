@@ -14,9 +14,9 @@ shelf(
 )
 
 loadData <- function(){
-  yesDF <- read.csv(here("data/YES_Mangroves_Rookery.csv")) %>%
+  yesDF <- read.csv(here("data/raw/YES_Mangroves_Rookery.csv")) %>%
     select(".geo", "occurrenceStatus")
-  noDF <- read.csv(here("data/NO_Mangroves_Rookery.csv")) %>%
+  noDF <- read.csv(here("data/raw/NO_Mangroves_Rookery.csv")) %>%
     select(".geo", "occurrenceStatus")
 
     # merge

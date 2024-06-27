@@ -1,5 +1,9 @@
 project:
   type: website
+  # pre-render: R/pre_render.R
+  render:
+    - "*.qmd"
+    - "!class_reports/"
 
 website:
   title: "satellite-ground-truthing"
@@ -8,6 +12,8 @@ website:
       - href: index.qmd
         text: Home
       - about.qmd
+      - href: data_sources.qmd
+        text: Data Sources
 
 format:
   html:
