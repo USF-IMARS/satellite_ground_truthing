@@ -45,7 +45,7 @@ Auth GEE:
 rgee::ee_Initialize()
 ```
 
-This analysis uses the TerraClimate Monthly Climate and Climatic Water Balance for Global Terrestrial Surfaces from  University of Idaho [[ref](https://developers.google.com/earth-engine/datasets/catalog/IDAHO_EPSCOR_TERRACLIMATE)].
+This analysis uses the TerraClimate Monthly Climate and Climatic Water Balance for Global Terrestrial Surfaces from University of Idaho [[ref](https://developers.google.com/earth-engine/datasets/catalog/IDAHO_EPSCOR_TERRACLIMATE)].
 
 
 ```{r}
@@ -65,24 +65,24 @@ coord_list <- lapply(1:nrow(df), function(i) {
 geometry <- ee$Geometry$MultiPoint(coord_list)
 
 # Define the time period (e.g., start and end dates)
-start_date <- "2010-01-01"
+start_date <- "2015-01-01"
 end_date <- "2024-01-01"
 
 # TODO: use sentinel 2
-ic_id = "IDAHO_EPSCOR/TERRACLIMATE"
+ic_id = "COPERNICUS/S2_SR_HARMONIZED"
 ```
 
 ```{r}
 # Define the collection
-terraclimate <- ee$ImageCollection(ic_id) %>%
+image_collection <- ee$ImageCollection(ic_id) %>%
   ee$ImageCollection$filterDate(start_date, end_date) %>%
-  ee$ImageCollection$filterBounds(geometry)
-
+  ee$ImageCollection$filterBounds(geometry) %>%
+  ee$ImageCollection$select(c("B2","B3","B4"))  
 # print(terraclimate$getInfo())
 
 # Do extraction ----
-ee_nc_rain <- ee_extract(
-  x = terraclimate, 
+extracted_series <- rgee::ee_extract(
+  x = image_collection, 
   y = geometry,
   sf = FALSE,
   scale = 10,  # meters
@@ -92,7 +92,7 @@ ee_nc_rain <- ee_extract(
 #| code-summary: reshape wide to long
 # extraction comes back as a wide df with columns like X{img_id}_{band_id}
 # convert it to a long df
-long_df <- ee_nc_rain %>%
+long_df <- extracted_series %>%
   pivot_longer(everything(), names_to = "column") %>%
   separate(col = column, into = c("img_id", "band_id"), sep = "_", remove = FALSE) %>%
   select(-column) %>%
@@ -101,7 +101,7 @@ long_df <- ee_nc_rain %>%
 ```
 ```{r}
 #| code-summary: add the dates of the images
-image_dates <- ee_get_date_ic(terraclimate) %>%
+image_dates <- ee_get_date_ic(image_collection) %>%
   mutate(
     id = str_replace(id, ".*/", ""),   # cut the ic_id out
     time_start = as.Date(time_start)
