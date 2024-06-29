@@ -18,6 +18,7 @@ source(here("./R/dataMunging/nerrs.R"))
 ```
 
 Load NERRS data
+
 ```{r}
 data <- loadData()
 ```

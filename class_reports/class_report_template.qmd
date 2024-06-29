@@ -15,7 +15,7 @@ params:
 # NOTE: must have conda system package installed.
 #      then run steps below (only once per system):
 # rgee::ee_install()
-rgee::ee_install_upgrade()
+# rgee::ee_install_upgrade()
 # rgee::ee_Authenticate()
 ```
 
@@ -66,7 +66,7 @@ geometry <- ee$Geometry$MultiPoint(coord_list)
 
 # Define the time period (e.g., start and end dates)
 start_date <- "2015-01-01"
-end_date <- "2024-01-01"
+end_date <- "2020-01-01"
 
 # TODO: use sentinel 2
 ic_id = "COPERNICUS/S2_SR_HARMONIZED"
@@ -94,10 +94,13 @@ extracted_series <- rgee::ee_extract(
 # convert it to a long df
 long_df <- extracted_series %>%
   pivot_longer(everything(), names_to = "column") %>%
-  separate(col = column, into = c("img_id", "band_id"), sep = "_", remove = FALSE) %>%
+  separate(col = column, into = c("img_id_1", "img_id_2", "img_id_3", "band_id"), sep = "_", remove = FALSE) %>%
   select(-column) %>%
-  rename(value = value) %>%
-  mutate(img_id = str_replace(img_id, "X", ""))
+  mutate(
+    # img_id = str_replace(img_id, "X", ""),
+    img_id_1 = str_replace(img_id_1, ".*X", ""),
+    img_id = paste(img_id_1, img_id_2, img_id_3, sep="_")
+  )
 ```
 ```{r}
 #| code-summary: add the dates of the images
@@ -123,12 +126,12 @@ ggplot(long_df, aes(x = time_start, y = value, color = band_id)) +
 Perform seasonal decomposition on the soil moisture, which is derived using a one-dimensional soil water balance model.
 
 ```{r}
-#| code-summary: seasonal decomposition of "soil"
+#| code-summary: seasonal decomposition of "B3"
 
-data <- filter(long_df, band_id == "soil")
+data <- filter(long_df, band_id == "B3")
 
 # Create a time series object
-ts_data <- ts(data$value, start = c(2010, 1), frequency = 12) # monthly 
+ts_data <- ts(data$value, start = c(2020, 1), frequency = 12) # monthly 
 
 # Perform seasonal decomposition
 decomposed_ts <- stl(ts_data, s.window = "periodic")
