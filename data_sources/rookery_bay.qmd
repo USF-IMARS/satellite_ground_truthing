@@ -104,3 +104,8 @@ print(p)
 #| code-summary: write reshaped data to file
 write.csv(mergedDF, here("data/dwc/mangrove-rookery.csv"), row.names = FALSE)
 ```   
+
+
+. | .
+--|--
+![MCC Logo](./mcc_logo.png) | ![NERRS Logo](./nerrs_logo.png)

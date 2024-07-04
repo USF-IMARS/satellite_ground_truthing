@@ -1,5 +1,9 @@
 # quarto init & RStudio files
 .Rproj.user
 *.Rproj
+.RData
+.Rhistory
 
 /.quarto/
+_site/
+*.cache

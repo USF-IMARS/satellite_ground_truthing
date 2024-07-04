@@ -22,7 +22,7 @@ shelf(
 Load NERRS data
 
 ```{r}
-data <- csv.read(here("data/dwc/mangrove-jobos.csv"))
+data <- read.csv(here("data/dwc/mangrove-jobos.csv"))
 ```
 
 ```{r}
