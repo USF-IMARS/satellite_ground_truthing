@@ -6,6 +6,8 @@ This repo outlines a set of habitat-class ground truth data aggregated by USF-IM
 Data provided by different sources is overviewed and standardized in the "Data Sources" reports.
 An exploration of the optical properties of each class is in "Class Reports".
 
+Data created and used here can be downloaded from [box.com/satellite_ground_truth](https://usf.box.com/s/dvis5acm0z2flxojlnjfywvv1pfvyrcx).
+
 # example data usage
 ```{r setup}
 # Install librarian package if you haven't already

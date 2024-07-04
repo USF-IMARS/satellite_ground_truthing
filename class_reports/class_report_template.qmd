@@ -127,7 +127,7 @@ ggplot(long_df, aes(x = time_start, y = value, color = band_id)) +
 ```
 
 
-Perform seasonal decomposition on the soil moisture, which is derived using a one-dimensional soil water balance model.
+Perform seasonal decomposition on one of the bands.
 
 ```{r}
 #| code-summary: seasonal decomposition of "B3"
