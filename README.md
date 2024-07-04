@@ -5,4 +5,5 @@
     * [YES_Mangroves_Rookery](https://usf.box.com/s/e1z2axgzfb50mcmhiuqjr2llv97tq4tb)
   * Jobos Bay NERR
     * TODO
-
+* set up rgee from an R console `rgee::ee_initialize()` then save workspace image
+* `quarto preview` or `quarto publish`

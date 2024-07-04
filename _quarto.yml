@@ -3,7 +3,6 @@ project:
   # pre-render: R/pre_render.R
   render:
     - "*.qmd"
-    - "!class_reports/"
 
 website:
   title: "satellite-ground-truthing"
@@ -11,9 +10,10 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - about.qmd
       - href: data_sources.qmd
         text: Data Sources
+      - href: class_reports/class_report_template.qmd
+        text: mangroves
 
 format:
   html:
