@@ -14,11 +14,11 @@
     "text": "NERRS MCC\n\n\n\n\n\n\nTylar Murray\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
+    "objectID": "class_reports/class_report_template.html",
+    "href": "class_reports/class_report_template.html",
+    "title": "Examine Points for a give class",
     "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
+    "text": "Auth GEE:\n\n\n── rgee 1.1.7 ─────────────────────────────────────── earthengine-api 0.1.378 ── \n ✔ user: not_defined \n ✔ Initializing Google Earth Engine:\n ✔ Initializing Google Earth Engine:  DONE!\n\n ✔ Earth Engine account: users/tylarmurray \n\n ✔ Python Path: /home/tylar/.virtualenvs/rgee/bin/python \n──────────────────────────────────────────────────────────────────────────────── \n\n\nThis analysis uses the TerraClimate Monthly Climate and Climatic Water Balance for Global Terrestrial Surfaces from University of Idaho [ref].\n\n\nNumber of features: Calculating ...\nNumber of features: 1                     \n\n\n\n\n\n\n\nPerform seasonal decomposition on the soil moisture, which is derived using a one-dimensional soil water balance model."
   },
   {
     "objectID": "data_sources/nerrs.html",
