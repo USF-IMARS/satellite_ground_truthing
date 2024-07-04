@@ -39,8 +39,6 @@ shelf(
   rgee,
   tidyverse
 )
-
-source(here("./R/dataMunging/nerrs.R"))
 ```
 
 Auth GEE:

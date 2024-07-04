@@ -1,0 +1,106 @@
+---
+title: "Rookery Bay NERRS MCC"
+author: "Tylar Murray"
+format: html
+code-fold: true
+editor: source
+---
+
+```{R} 
+#| label: import libraries & functions
+#| code-summary: (code) import libraries & functions
+#| message: false
+#| warning: false
+if (!requireNamespace("librarian", quietly = TRUE)) {
+  # If not installed, install the package
+  install.packages("librarian")
+}
+
+librarian::shelf(
+  dplyr,
+  here,
+  ggplot2,
+  ggspatial,
+  glue,
+  jsonlite,
+  leaflet,
+  prettymapr,
+  sf
+)
+```
+
+```{R}
+#| code-summary: load the raw data
+yesDF <- read.csv(here("data/raw/YES_Mangroves_Jobos.csv")) %>%
+  select(".geo", "occurrenceStatus")
+noDF <- read.csv(here("data/raw/NO_Mangroves_Jobos.csv")) %>%
+  select(".geo", "occurrenceStatus")
+```
+```{R}
+#| code-summary: basic data reshaping
+# merge the no & yes
+mergedDF <- dplyr::full_join(yesDF, noDF, by = c(".geo", "occurrenceStatus"))
+
+# parse the .geo column
+mergedDF <- mergedDF %>%
+  mutate(
+    coordinates = lapply(`.geo`, function(x) fromJSON(x)$coordinates),
+    lon = sapply(coordinates, function(x) x[1]),
+    lat = sapply(coordinates, function(x) x[2]),
+    coordinates = NULL,  # rm coordinates now that lat, lon extracted
+    `.geo` = NULL  # rm old geom column
+  )
+```
+
+```{R}
+#| code-summary: add some require DwC fields
+# occurrenceID intentionally left out
+# TODO: are these red mangroves or red/white/black all together.
+#       if the latter, eudicots is the taxa that encapsulates all; not helpful. 
+# scientificNameID intentionally left out
+# geodeticDatum intentionally left out
+# kingdom intentionally left out
+# countryCode intentionally left out
+mergedDF$basisOfRecord <- "MachineObservation"
+mergedDF$eventDate <- "2022"  # estimated
+mergedDF$coordinateUncertaintyInMeters <- 2
+# reformat occurrenceStatus [1,0] to ["present","absent"]
+mergedDF$occurrenceStatus <- ifelse(mergedDF$occurrenceStatus == 1, 'present', 'absent')
+# TODO: samplingProtocol link here
+# TODO: could use mergedDF$vitality <- "alive"
+# TODO: use occurrenceRemarks here?
+```
+
+```{R}
+#| code-summary: show points on map
+data <- mergedDF
+
+# Define a color palette
+pal <- c("present" = "green", "absent" = "red")
+
+# Convert data to sf object
+sf_data <- st_as_sf(data, coords = c("lon", "lat"), crs = 4326)
+
+# Create the ggplot
+p <- ggplot(data = sf_data) +
+  annotation_map_tile(type = "osm") +
+  geom_sf(aes(color = occurrenceStatus), size = 3, alpha = 0.4) +
+  scale_color_manual(values = pal, name = "Occurrence Status") +
+  theme_minimal() +
+  theme(
+    legend.position = "bottomright",
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)
+  ) +
+  ggtitle("Occurrence Status Map")
+
+# Save the plot as a .png image
+# ggsave("static_map_jobos.png", plot = p, width = 8, height = 6)
+print(p)
+
+```
+
+```{R}
+#| code-summary: write reshaped data to file
+write.csv(mergedDF, here("data/dwc/mangrove.csv"), row.names = FALSE)
+```   
