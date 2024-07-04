@@ -2,18 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://USF-IMARS.github.io/satellite_ground_truthing/index.html</loc>
-    <lastmod>2024-07-04T14:21:10.549Z</lastmod>
-  </url>
-  <url>
-    <loc>https://USF-IMARS.github.io/satellite_ground_truthing/data_sources.html</loc>
-    <lastmod>2024-07-04T14:21:02.490Z</lastmod>
+    <lastmod>2024-07-04T15:42:32.654Z</lastmod>
   </url>
   <url>
     <loc>https://USF-IMARS.github.io/satellite_ground_truthing/class_reports/class_report_template.html</loc>
-    <lastmod>2024-07-04T14:21:02.241Z</lastmod>
+    <lastmod>2024-07-04T15:42:31.016Z</lastmod>
   </url>
   <url>
-    <loc>https://USF-IMARS.github.io/satellite_ground_truthing/data_sources/nerrs.html</loc>
-    <lastmod>2024-07-04T14:21:09.104Z</lastmod>
+    <loc>https://USF-IMARS.github.io/satellite_ground_truthing/data_sources/jobos_bay.html</loc>
+    <lastmod>2024-07-04T15:42:06.836Z</lastmod>
+  </url>
+  <url>
+    <loc>https://USF-IMARS.github.io/satellite_ground_truthing/data_sources/rookery_bay.html</loc>
+    <lastmod>2024-07-04T15:42:13.524Z</lastmod>
+  </url>
+  <url>
+    <loc>https://USF-IMARS.github.io/satellite_ground_truthing/data_sources.html</loc>
+    <lastmod>2024-07-04T15:42:31.300Z</lastmod>
   </url>
 </urlset>
