@@ -7,16 +7,21 @@ execute:
   warning: false
 params:
   className: "mangrove"  # TODO: this is unused in the code TODO: seagrass
-  occurrenceStatus: 1
+  occurrenceStatus: "present"
 ---
 
 ```{r}
 #| code-summary: rgee install
 # NOTE: must have conda system package installed.
 #      then run steps below (only once per system):
-# rgee::ee_install()
-# rgee::ee_install_upgrade()
-# rgee::ee_Authenticate()
+if (!requireNamespace("rgee", quietly = TRUE)) {
+  rgee::ee_install()
+  rgee::ee_install_upgrade()
+  rgee::ee_Authenticate()
+} else{
+  print("rgee already installed")
+}
+
 ```
 
 ```{r setup}
@@ -35,7 +40,6 @@ shelf(
   tidyverse
 )
 
-# TODO: get all the data instead?
 source(here("./R/dataMunging/nerrs.R"))
 ```
 
@@ -54,8 +58,9 @@ This analysis uses the TerraClimate Monthly Climate and Climatic Water Balance f
 # lon <-  -80.99341033321342
 # geometry <- ee$Geometry$Point(lon, lat)
 
-df <- loadData() %>%
-  filter(occurrenceStatus == params$occurrenceStatus)  # TODO: this should filter using className
+df <- read.csv(here("data/dwc/mangrove.csv")) %>%
+  filter(occurrenceStatus == params$occurrenceStatus)  
+
 # Convert DataFrame to list of coordinates
 coord_list <- lapply(1:nrow(df), function(i) {
   list(df$lon[i], df$lat[i])
