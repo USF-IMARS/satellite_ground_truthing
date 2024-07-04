@@ -56,7 +56,8 @@ This analysis uses the TerraClimate Monthly Climate and Climatic Water Balance f
 # lon <-  -80.99341033321342
 # geometry <- ee$Geometry$Point(lon, lat)
 
-df <- read.csv(here("data/dwc/mangrove.csv")) %>%
+df <- read.csv(here("data/dwc/mangrove-rookery.csv")) %>%
+  rbind(read.csv(here("data/dwc/mangrove-jobos.csv"))) %>%
   filter(occurrenceStatus == params$occurrenceStatus)  
 
 # Convert DataFrame to list of coordinates

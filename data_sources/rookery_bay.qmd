@@ -95,12 +95,12 @@ p <- ggplot(data = sf_data) +
   ggtitle("Occurrence Status Map")
 
 # Save the plot as a .png image
-# ggsave("static_map.png", plot = p, width = 8, height = 6)
+# ggsave("rookery_static_map.png", plot = p, width = 8, height = 6)
 print(p)
 
 ```
 
 ```{R}
 #| code-summary: write reshaped data to file
-write.csv(mergedDF, here("data/dwc/mangrove.csv"), row.names = FALSE)
+write.csv(mergedDF, here("data/dwc/mangrove-rookery.csv"), row.names = FALSE)
 ```   

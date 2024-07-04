@@ -102,5 +102,5 @@ print(p)
 
 ```{R}
 #| code-summary: write reshaped data to file
-write.csv(mergedDF, here("data/dwc/mangrove.csv"), row.names = FALSE)
+write.csv(mergedDF, here("data/dwc/mangrove-jobos.csv"), row.names = FALSE)
 ```   

@@ -2,6 +2,11 @@
 title: "satellite-ground-truthing"
 ---
 
+This repo outlines a set of habitat-class ground truth data aggregated by USF-IMaRS for use in training of satellite image processing routines.
+Data provided by different sources is overviewed and standardized in the "Data Sources" reports.
+An exploration of the optical properties of each class is in "Class Reports".
+
+# example data usage
 ```{r setup}
 # Install librarian package if you haven't already
 if (!requireNamespace("librarian", quietly = TRUE)) {
@@ -13,14 +18,11 @@ shelf(
   here,
   leaflet
 )
-
-source(here("./R/dataMunging/nerrs.R"))
 ```
-
 Load NERRS data
 
 ```{r}
-data <- loadData()
+data <- csv.read(here("data/dwc/mangrove-jobos.csv"))
 ```
 
 ```{r}

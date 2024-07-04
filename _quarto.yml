@@ -1,7 +1,8 @@
 project:
   type: website
   # pre-render: R/pre_render.R
-  render:
+  render:  # used to set render order
+    - "data_sources/*.qmd"
     - "*.qmd"
 
 website:
