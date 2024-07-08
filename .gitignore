@@ -7,3 +7,6 @@
 /.quarto/
 _site/
 *.cache
+
+# ubuntu backup files
+*~
